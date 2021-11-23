@@ -10,12 +10,11 @@ data = pd.read_csv('https://raw.githubusercontent.com/justmarkham/DAT8/master/da
 
 
 # 1
-print('Всего наблюдений', data.order_id.count())
+print('Всего наблюдений', data.shape[0])
 
 # 2
 print('Столбцы:', end = ' ')
-for elem in data.columns.tolist():
-    print(elem, end = ' ')
+print(data.columns.tolist())
 print()
 
 # 3
@@ -24,14 +23,14 @@ print('Самая частая позиция:',
 
 # 4
 data['item_name'].value_counts().plot.bar()
-#plt.show()
+plt.show()
 
 # 5
 data.item_price = data['item_price'].apply(lambda x: float(x[1:]))
 
 # 6
 data[['item_name', 'item_price']].groupby('item_name').sum()['item_price'].plot.bar()
-#plt.show()
+plt.show()
 
 # 7
 print('Средняя сумма заказа:')
@@ -60,7 +59,22 @@ print('Статистика заказов прожарки Hot:',
       steak_hot.groupby('item_name')[['item_price', 'quantity']].describe())
 
 # 10
-new_column = data[['item_price']].apply(lambda x: x*71).rename(columns = {'item_price': 'item_price_rub'})
+new_column = data[['item_price']].apply(lambda x: x*71.41).rename(columns = {'item_price': 'item_price_rub'})
 data = data.merge(new_column, left_index = True, right_index = True)
 
-# 11
+#11
+print(data['item_name'].value_counts())
+print('Отдельная группировка по стейкам:')
+print (steak['item_name'].value_counts())
+
+# 12
+prices = []
+for id, row in data.iterrows():
+    if 'and' not in row['item_name']:
+        prices.append(row['item_name'] + ' cost '
+                      + str(round(row['item_price'] / row['quantity'], 2)) + '$ or '
+                      + str(round(row['item_price_rub'] / row['quantity'], 2)) + 'P')            
+
+prices = list(set((prices)))
+for elem in prices:
+    print(elem)
